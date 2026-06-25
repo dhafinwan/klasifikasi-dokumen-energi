@@ -20,8 +20,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-MODEL_DIR = Path("indobert_teknik_mesin")
-META_FILE = MODEL_DIR / "metadata.json"
+# GANTI DENGAN REPO HUGGING FACE-MU
+MODEL_NAME = "Dhafinwan/model-klasifikasi-model"
 MIN_CHAR  = 20
 
 CLASS_DESC = {
@@ -33,25 +33,24 @@ CLASS_DESC = {
 # ─────────────────────────────────────────────────────────────
 # LOAD MODEL & CACHE
 # ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
+# LOAD MODEL & CACHE
+# ─────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def load_model():
-    if not MODEL_DIR.exists():
-        st.error(f"Folder model '{MODEL_DIR}' tidak ditemukan.")
-        st.stop()
-
-    with open(META_FILE, "r", encoding="utf-8") as f:
-        metadata = json.load(f)
-
-    id2label   = {int(k): v for k, v in metadata["id2label"].items()}
-    label2id   = metadata["label2id"]
-    max_length = metadata.get("max_length", 256)
-    num_labels = metadata.get("num_labels", 3)
-    
+   
+    MODEL_NAME = "Dhafinwan/model-klasifikasi-model"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    tokenizer = BertTokenizer.from_pretrained(str(MODEL_DIR))
-    model = BertForSequenceClassification.from_pretrained(str(MODEL_DIR))
+    
+    
+    tokenizer = BertTokenizer.from_pretrained(MODEL_NAME)
+    model = BertForSequenceClassification.from_pretrained(MODEL_NAME)
     model.to(device)
     model.eval()
+
+    
+    id2label = {0: "Energi", 1: "Manufaktur", 2: "Material"}
+    label2id = {"Energi": 0, "Manufaktur": 1, "Material": 2}
 
     return {
         "tokenizer"  : tokenizer,
@@ -59,8 +58,8 @@ def load_model():
         "device"     : device,
         "id2label"   : id2label,
         "label2id"   : label2id,
-        "max_length" : max_length,
-        "num_labels" : num_labels,
+        "max_length" : 256,
+        "num_labels" : 3,
     }
 
 # ─────────────────────────────────────────────────────────────
